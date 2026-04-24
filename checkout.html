@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+
+    .box {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #333;
+    }
+
+    .product-info {
+      background: #eee;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Checkout</h2>
+
+  <div class="product-info">
+    <strong id="produk"></strong><br>
+    Harga: Rp <span id="harga"></span>
+  </div>
+
+  <form id="formCheckout">
+
+    <label>Nama</label>
+    <input type="text" required>
+
+    <label>No. WhatsApp</label>
+    <input type="text" required>
+
+    <label>Alamat Pengiriman</label>
+    <textarea required></textarea>
+
+<label>No. Polisi</label>
+<input type="text" id="nopol" placeholder="Contoh: B 1234 ABC" required>
+
+<label>Bulan / Tahun</label>
+<input type="text" id="bulanTahun" placeholder="Contoh: 08.26" required>
+
+<label>Garis</label>
+<select id="garis">
+  <option value="Tidak">Tidak</option>
+  <option value="Ya">Ya</option>
+</select>
+
+<div id="opsiGaris" style="display:none;">
+  <label>Jenis Garis</label>
+  <select id="jenisGaris">
+    <option>Garis Lurus</option>
+    <option>Garis Detak</option>
+  </select>
+
+  <label>Warna Garis</label>
+  <select id="warnaGaris">
+    <option>Hitam</option>
+    <option>Merah</option>
+  </select>
+</div>
+
+<label>Custom Nama</label>
+<select id="customNama">
+  <option value="Tidak">Tidak</option>
+  <option value="Ya">Ya</option>
+</select>
+
+<div id="inputCustomNama" style="display:none;">
+  <label>Isi Nama Custom</label>
+  <input type="text" id="namaCustom" placeholder="Masukkan nama">
+</div>
+
+<label>Jenis Motor</label>
+<input type="text" id="jenisMotor" placeholder="Contoh: Beat, Nmax, Vario" required>
+
+    <label>Metode Pembayaran</label>
+    <select required>
+      <option value="">Pilih Metode</option>
+      <option>Bank Transfer</option>
+      <option>QRIS</option>
+    </select>
+
+    <button type="submit">Kirim Pesanan</button>
+
+  </form>
+</div>
+
+<script>
+// Show/hide garis
+document.getElementById('garis').addEventListener('change', function() {
+  document.getElementById('opsiGaris').style.display =
+    this.value === 'Ya' ? 'block' : 'none';
+});
+
+// Show/hide custom nama
+document.getElementById('customNama').addEventListener('change', function() {
+  document.getElementById('inputCustomNama').style.display =
+    this.value === 'Ya' ? 'block' : 'none';
+});
+</script>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const produk = params.get('produk');
+  const harga = params.get('harga');
+
+  document.getElementById('produk').innerText = produk;
+  document.getElementById('harga').innerText = harga;
+
+  const noWA = "6289658126767"; // GANTI NOMOR KAMU
+
+  document.getElementById('formCheckout').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const nama = document.querySelectorAll('input[type="text"]')[0].value;
+    const wa = document.querySelectorAll('input[type="text"]')[1].value;
+    const alamat = document.querySelector('textarea').value;
+    const pembayaran = document.querySelector('select').value;
+
+// DATA KENDARAAN
+const nopol = document.getElementById('nopol').value;
+const bulanTahun = document.getElementById('bulanTahun').value;
+const garis = document.getElementById('garis').value;
+const jenisGaris = document.getElementById('jenisGaris').value;
+const warnaGaris = document.getElementById('warnaGaris').value;
+const customNama = document.getElementById('customNama').value;
+const namaCustom = document.getElementById('namaCustom').value;
+const jenisMotor = document.getElementById('jenisMotor').value;
+
+// FORMAT TAMBAHAN
+let detailGaris = garis === "Ya"
+  ? `${jenisGaris} (${warnaGaris})`
+  : "Tidak";
+
+let detailCustom = customNama === "Ya"
+  ? namaCustom
+  : "Tidak";
+
+// PESAN
+const pesan = `Halo, saya ingin order:
+
+📦 Produk: ${produk}
+💰 Harga: Rp ${harga}
+
+👤 Nama: ${nama}
+📱 No WA: ${wa}
+🏠 Alamat: ${alamat}
+
+🚗 Detail Kendaraan:
+- No Polisi: ${nopol}
+- Bln.Thn: ${bulanTahun}
+- Garis: ${detailGaris}
+- Custom Nama: ${detailCustom}
+- Jenis Motor: ${jenisMotor}
+
+💳 Pembayaran: ${pembayaran}
+
+Terima kasih`;
+
+    const url = `https://wa.me/${noWA}?text=${encodeURIComponent(pesan)}`;
+
+    window.open(url, '_blank');
+  });
+</script>
+
+</body>
+</html>
